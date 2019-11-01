@@ -1,0 +1,146 @@
+---
+title: "Class 6 R Functions"
+author: "Jelani Lyda"
+date: "10/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# This is a H1
+This is my class 6 work. This will be **bold**
+
+## This is a H2
+
+### A level 3 heading H3
+
+```{r}
+plot(1:10)
+```
+
+```{r}
+read.csv(file = "test1.txt")
+read.delim(file = "test2.txt", sep = "$")
+read.table(file = "test3.txt")
+```
+
+Our first silly function
+```{r}
+add <- function(x, y = 1){
+  #Sum the input of x and y
+  x + y
+}
+```
+
+```{r}
+add(10,10)
+add(c(5,6, 100, 334), y = 7000)
+```
+
+```{r}
+rescale <- function(x) {
+ rng <-range(x)
+ (x - rng[1]) / (rng[2] - rng[1])
+}
+
+rescale(c(1,2,3,NA,10))
+```
+
+```{r}
+rescale2 <- function(x) {
+ rng <-range(x, na.rm = T)
+ (x - rng[1]) / (rng[2] - rng[1])
+}
+
+rescale2(c(1,2,3,NA,10))
+```
+
+
+```{r}
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
+
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+
+hc <- hclust( dist( rbind(s1.b, s2.b, s3.b) ) )
+plot(hc)
+
+
+function_name <- function(){
+  
+}
+```
+
+
+```{r}
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+points(s2.b, typ="l", col = "blue")
+points(s3.b, typ="l", col = "red")
+```
+
+```{r}
+library(bio3d)
+graph_PDB <- function(pdb_protein, chain = "A", electy = "CA", typ = "l", ylab = "Bfactor"){
+  #Reads a PDB file and outputs a graph (defult line chart) of a subset of the sequence
+  #Input your PDB protein call name as the first input and any additional specifications
+  #Read PDB file
+  pdb_file <- read.pdb(pdb_protein)
+  
+  #Trim PDB Object
+  s1.chainA <- trim.pdb(pdb_file, chain = chain, elety = "CA")
+  
+  #Select specific data
+  s1.a <- s1.chainA$atom$b
+  
+  #Plot data
+  plotb3(s1.a, sse=s1.chainA, typ= typ, ylab= ylab)
+}
+
+graph_PDB("4AKE")
+
+#plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+```
+
+
+
+```{r}
+  pdb_file <- read.pdb("4AKE")
+  
+  #Trim PDB Object
+  s1 <- trim.pdb(pdb_file, chain = "A", elety = "CA")
+  
+  #Select specific data
+  s1.a <- s1$atom$b
+  
+  #Plot data
+  plotb3(s1.a, sse=s1.chainA, typ= "l", ylab= "Title")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
