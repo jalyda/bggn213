@@ -1,2 +1,2 @@
-# bggn213
-Classwork from BGGN213
+# Bioinformatics Class
+This is my classwork from BGGN 213
