@@ -1,0 +1,186 @@
+---
+title: "Class08"
+author: "Jelani Lyda"
+date: "10/25/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## K-means example
+
+```{r}
+# Generate some example data for clustering
+tmp <- c(rnorm(30,-3), rnorm(30,3))
+x <- cbind(x=tmp, y=rev(tmp))
+plot(x)
+
+```
+
+```{r}
+k <- kmeans(x, 2, nstart = 20)
+k
+
+```
+Q. How many points are in each cluster?
+```{r}
+#Finds how many points are in each cluster
+k$size
+```
+
+
+Q. What ‘component’ of your result object details
+ - cluster size?
+ - cluster assignment/membership?
+ - cluster center?
+```{r}
+#Cluster assignment/membership
+table(k$cluster)
+k$centers
+```
+
+Plot x colored by the kmeans cluster assignment and
+ add cluster centers as blue points
+```{r}
+plot(x, col = k$cluster)
+points(k$centers, col = "blue", pch = 15)
+```
+
+
+##Hierachical clustering in R
+```{r}
+hc <- hclust( dist(x))
+hc
+```
+
+
+Plot my results
+```{r}
+plot(hc)
+abline(h = 6, col = "red")
+abline(h = 4, col = "blue")
+#Cuts graph at the hight
+cutree(hc, h = 6)
+grps <- cutree(hc, h = 4)
+table(grps)
+```
+
+I can also cut the tree to yield a given 'k' groups/clusters 
+```{r}
+grps2 <- cutree(hc, k=2)
+```
+
+
+```{r}
+#plot
+plot(x, col = grps2)
+```
+
+
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+ matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2), # c1
+ matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+ matrix(c(rnorm(50, mean = 1, sd = 0.3), # c3
+ rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+
+plot(x)
+
+# Step 3. Generate colors for known clusters
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+```
+
+Q. Use the dist(), hclust(), plot() and cutree()
+ functions to return 2 and 3 clusters 
+```{r}
+hc2 <- hclust( dist(x))
+plot(hc2)
+
+hc2_k2 <- cutree(hc2, k = 2)
+hc2_k3 <- cutree(hc2, k = 3)
+```
+ 
+```{r}
+plot(x, col = hc2_k2)
+plot(x, col = hc2_k3)
+```
+
+```{r}
+table(col, hc2_k3)
+```
+
+
+```{r}
+## You can also download this file from the class website!
+mydata <- read.csv("https://tinyurl.com/expression-CSV",
+ row.names=1)
+
+head(mydata)
+```
+
+```{r}
+## lets do PCA
+pca <- prcomp(t(mydata), scale=TRUE)
+## See what is returned by the prcomp() function
+attributes(pca)
+```
+
+
+```{r}
+x <- pca$x[,1]
+y <- pca$x[,2]
+plot(x, y)
+plot(pca)
+```
+
+```{r}
+summary(pca)
+```
+
+```{r}
+plot(pca$x[,1], pca$x[,2], col = c(rep("red", 5), rep("blue", 5)))
+plot(pca$x)
+pca$x
+```
+
+
+```{r}
+x <- read.csv("UK_foods.csv",
+ row.names=1)
+dim(x)
+head(x)
+```
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+pairs(x, col=rainbow(10), pch=16)
+```
+
+```{r}
+pca <- prcomp( t(x) )
+summary(pca)
+
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500), col = c("Orange", "Pink", "Blue", "Green"))
+text(pca$x[,1], pca$x[,2], colnames(x), col = c("Orange", "Pink", "Blue", "Green"))
+```
+
+```{r}
+## Lets focus on PC1 as it accounts for > 90% of variance 
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,1], las=2 )
+```
+
+
+
+
+
+
+
+
+
+
