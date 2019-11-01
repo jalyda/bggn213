@@ -1,0 +1,107 @@
+---
+title: "class07"
+author: "Jelani Lyda"
+date: "10/23/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Revisit our functions from last day
+
+```{r}
+source("http://tinyurl.com/rescale-R")
+
+```
+
+Let's try our rescale() function from last day
+```{r}
+rescale(1:10)
+```
+
+```{r}
+rescale( c(3, 10, 7))
+```
+
+```{r}
+rescale2(c(3, 10, 4, 7))
+```
+
+## Write a function both_NA()
+We want to write a function, called both_na(),
+that counts how many positions in two input
+vectors, x and y, both have a missing value
+```{r}
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 2, NA, 3, 4)
+
+is.na(x)
+is.na(y)
+
+which( is.na(x))
+
+#Working snippit of code
+is.na(x) & is.na(y)
+
+both_na <- function(x,y){
+  sum(is.na(x) & is.na(y))
+}
+
+both_na(x,y)
+
+x <- c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA, NA)
+
+both_na(x,y2)
+```
+
+```{r}
+both_na2 <- function(x,y){
+  if (length(x) != length(y)){
+    stop("Vectors are different lenghts")
+  }
+  sum(is.na(x) & is.na(y))
+}
+
+both_na2(x, y1)
+
+```
+
+
+##Make a function to grade students
+```{r}
+# student 1
+a <- c(100, 100, 100, 100, 100, 100, 100, 90)
+# student 2
+b <- c(100, NA, 90, 90, 90, 90, 97, 80)
+
+c <- b[-(which.min(b))]
+mean(c, na.rm = TRUE)
+
+grade <- function(data_set){
+  data_set[is.na(data_set)] <- 0
+  data_set2 <- data_set[-(which.min(data_set))]
+  mean(data_set2, na.rm = TRUE)
+}
+
+grade(a)
+
+f <- c(1, 1, 1, 1)
+f[is.na(f)] <- 0
+f
+
+```
+
+
+
+
+
+
+
+
+
+
+
