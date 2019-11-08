@@ -1,0 +1,54 @@
+---
+title: "Class12: Structural Bioinformatics II"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prepare protein structure for docking
+
+Download the 1HSG PDB structure and then produce a "protein-only" and "ligand-only" new seperate PDB files.
+
+```{r}
+library(bio3d)
+
+get.pdb("1hsg")
+```
+
+#Produce a "1hsg_protein.pdb" and "1hsg_ligand.pdb" file
+```{r}
+pdb <-read.pdb("1hsg.pdb")
+pdb
+```
+
+```{r}
+ligand <- atom.select(pdb, "ligand", value = TRUE)
+write.pdb(ligand, file = "1hsg_ligand.pdb")
+
+protein <- atom.select(pdb, "protein", value = TRUE)
+write.pdb(protein, file = "1hsg_protein.pdb")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
