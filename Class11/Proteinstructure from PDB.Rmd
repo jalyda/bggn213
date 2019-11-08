@@ -1,0 +1,29 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Q1a. Determine the percentage of structures solved by X-Ray and Electron Microscopy
+```{r}
+data <- read.csv("Data Export Summary.csv")
+sum <- sum(data$Total)
+total <- data$Total
+total[1]/sum * 100
+total[3]/sum * 100
+```
+
+```{r}
+ans <- data$Total/sum(data$Total) * 100
+names(ans) <- data$Experimental.Method
+round(ans, 2)
+```
+
+Q1b. Also can you determine what proportion of structures are protein?
+```{r}
+round(sum(data$Proteins)/sum(data$Total) * 100, 2)
+```
+
