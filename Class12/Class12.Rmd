@@ -32,6 +32,9 @@ write.pdb(protein, file = "1hsg_protein.pdb")
 ```
 
 
+```{r}
+
+```
 
 
 
