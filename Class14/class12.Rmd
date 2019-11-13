@@ -1,0 +1,223 @@
+---
+title: "Class14"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup Bioconductor DESeq2
+
+```{r eval=FALSE}
+#eval=FALSE: R will ask to run this section of code
+
+install.packages("BiocManager")
+BiocManager::install()
+# For this class, you'll also need DESeq2:
+BiocManager::install("DESeq2")
+```
+
+```{r}
+library(BiocManager)
+```
+
+# Data for todays class
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata <- read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+head(counts)
+```
+
+How many genes do we have in the dataset?
+```{r}
+nrow(counts)
+```
+
+How many experiemnts are in this dataset?
+```{r}
+ncol(counts) - 1
+```
+
+Lets make sure the metadata id col matches the colnames of counts
+```{r}
+#The all function is useful for looking accross a vector of logicals
+all(colnames(counts)[-1] == metadata$id)
+```
+
+## Analysis: compare the control to the drug treated
+
+First we need to access the columns of out countData that are contol and then find their mean
+
+```{r}
+metadata$dex == "control"
+```
+```{r}
+#Get the control ids
+control.id <- metadata[metadata$dex == "control", ]$id
+control.id
+```
+```{r}
+#Get the control data
+head(counts[, control.id])
+```
+
+```{r}
+#Get the mean of each row
+control.mean <- rowSums(counts[,control.id])/length(control.id)
+names(control.mean) <- counts$ensgene
+```
+
+```{r}
+#Now for the treated columns
+treated.id <- metadata[metadata$dex == "treated", ]$id
+treated.mean <- rowSums(counts[,treated.id])/length(treated.id)
+names(treated.mean) <- counts$ensgene
+```
+
+Let's store these together
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+```
+
+```{r}
+plot(meancounts$control.mean, meancounts$treated.mean)
+```
+
+```{r}
+#A lot of data are concentrated around 0, so use a log scale to see all of the data
+plot(meancounts$control.mean, meancounts$treated.mean, log = "xy")
+```
+
+```{r}
+#devide by the log of each. If the  value is above 0 then the gene was more expressed in the treatment and if its below 0 then the gene is more expresses in the control
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+There are a couple of “weird” results. Namely, the NaN ("not a number") and -Inf (negative infinity) results.
+
+The NaN is returned when you divide by zero and try to take the log. The -Inf is returned when you try to take the log of zero. It turns out that there are a lot of genes with zero expression. Let’s filter our data to remove these genes. Again inspect your result (and the intermediate steps) to see if things make sense to you
+
+```{r}
+#Test for finding ero entries
+
+x <- c(5,8,0,5)
+x == 0
+which(x == 0)
+```
+```{r}
+x <- data.frame(happy = c(5,6,0,0), sad = c(0,5,5,0))
+x == 0
+```
+```{r}
+#Shows the row and column of TRUE values
+which(x == 0, arr.ind = TRUE)
+```
+
+Focus on the rows only that have 0 entries
+```{r}
+unique(which(x == 0, arr.ind = TRUE)[,1])
+
+```
+
+```{r}
+a <- data.frame(wanna = c(3,6,54,2,4,0,0), sleep = c(7,0,2,0,1,0,6))
+which(a == 0, arr.ind = TRUE)
+```
+
+```{r}
+#Apply to mean counts
+to.rm <- unique(which(meancounts[,1:2] == 0, arr.ind = TRUE)[,1])
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+```
+
+A common threshold used for calling something differentially expressed is a log2(FoldChange) of greater than 2 or less than -2. Let’s filter the dataset both ways to see how many genes are up or down-regulated.
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+sum(up.ind)
+sum(down.ind)
+```
+
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+This is the organism annotation package ("org") for Homo sapiens ("Hs"), organized as an AnnotationDbi database package ("db"), using Entrez Gene IDs ("eg") as primary key. To get a list of all available key types, use:
+```{r}
+columns(org.Hs.eg.db)
+```
+
+We can use the mapIds() function to add individual columns to our results table. We provide the row names of our results table as a key, and specify that keytype=ENSEMBL. The column argument tells the mapIds() function which information we want, and the multiVals argument tells the function what to do if there are multiple possible values for a single input value. Here we ask to just give us back the first one that occurs in the database.
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts), # Our genenames
+                     keytype="ENSEMBL",        # The format of our genenames
+                     column="SYMBOL",          # The new format we want to add
+                     multiVals="first")
+```
+
+```{r}
+head(mycounts)
+```
+
+
+Now to finnaly use DESeq2
+```{r}
+library(DESeq2)
+citation("DESeq2")
+```
+
+Set up data for DESeq2 analysis
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+
+Run DESeq
+```{r}
+dds <- DESeq(dds)
+```
+
+
+```{r}
+res <- results(dds)
+res
+```
+
+```{r}
+plot(res$log2FoldChange, res$padj)
+```
+
+```{r}
+plot(res$log2FoldChange, -log(res$padj))
+```
+Add colors
+```{r}
+mycols <- rep("gray", length(res$padj))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "blue"
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "red"
+
+plot(res$log2FoldChange, -log(res$padj), col = mycols)
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.1), col="gray", lty=2)
+```
+
+
+
+
+
+
+
+
+
+
+
