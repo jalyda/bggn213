@@ -1,0 +1,68 @@
+---
+title: "Cancer Genomics"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(GenomicDataCommons)
+library(TCGAbiolinks)
+library(maftools)
+```
+
+```{r}
+status()
+```
+
+```{r}
+projects <- getGDCprojects()
+head(projects)
+```
+
+```{r}
+cases_by_project <- cases() %>%
+  facet("project.project_id") %>%
+  aggregations()
+head(cases_by_project)
+```
+
+```{r}
+library(bio3d)
+library()
+```
+
+```{r}
+seqs <- read.fasta("lecture18_sequences.fa")
+seqs
+```
+
+```{r}
+id <- conserv(seqs, method = "identity")
+which(id != 1)
+```
+
+```{r}
+pos <- which(id != 1)[1]
+seq$ali[,pos]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
