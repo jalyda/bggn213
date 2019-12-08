@@ -125,7 +125,7 @@ meancounts <- data.frame(control.mean, treated.mean)
 plot(meancounts$control.mean, meancounts$treated.mean)
 ```
 
-![](class12_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](class14_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 #A lot of data are concentrated around 0, so use a log scale to see all of the data
@@ -138,7 +138,7 @@ plot(meancounts$control.mean, meancounts$treated.mean, log = "xy")
     ## Warning in xy.coords(x, y, xlabel, ylabel, log): 15281 y values <= 0
     ## omitted from logarithmic plot
 
-![](class12_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](class14_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 #devide by the log of each. If the  value is above 0 then the gene was more expressed in the treatment and if its below 0 then the gene is more expresses in the control
@@ -508,13 +508,13 @@ res
 plot(res$log2FoldChange, res$padj)
 ```
 
-![](class12_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](class14_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 ``` r
 plot(res$log2FoldChange, -log(res$padj))
 ```
 
-![](class12_files/figure-gfm/unnamed-chunk-33-1.png)<!-- --> Add colors
+![](class14_files/figure-gfm/unnamed-chunk-33-1.png)<!-- --> Add colors
 
 ``` r
 mycols <- rep("gray", length(res$padj))
@@ -527,4 +527,4 @@ abline(v=c(-2,2), col="gray", lty=2)
 abline(h=-log(0.1), col="gray", lty=2)
 ```
 
-![](class12_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](class14_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
