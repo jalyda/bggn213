@@ -1,4 +1,4 @@
-Untitled
+Class11: Protein structure
 ================
 
 Q1a. Determine the percentage of structures solved by X-Ray and Electron

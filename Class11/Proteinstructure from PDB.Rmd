@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Class11: Protein structure"
 output: github_document
 ---
 
@@ -26,4 +26,77 @@ Q1b. Also can you determine what proportion of structures are protein?
 ```{r}
 round(sum(data$Proteins)/sum(data$Total) * 100, 2)
 ```
+
+
+# Working with biomolecular data in R
+
+
+```{r}
+library(bio3d)
+pdb <- read.pdb("1hsg.pdb")
+summary(pdb)
+```
+
+```{r}
+#Change all residue names to single letters
+aa321(pdb$atom[pdb$calpha,"resid"])
+```
+
+```{r}
+#Call atoms to get rid of drug residues
+ca.inds <- atom.select(pdb, "calpha")
+ca.inds
+```
+```{r}
+lig <- atom.select(pdb, "ligand", value = TRUE)
+write.pdb(lig, file="1hsg_ligand.pdb")
+
+```
+```{r}
+prot <- atom.select(pdb, "protein", value = TRUE)
+write.pdb(prot, file = "1hsg_prot.pdb")
+```
+
+```{r}
+library(bio3d.view)
+view(lig)
+view(pdb, "overview", col = "sse")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
