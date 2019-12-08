@@ -51,3 +51,8 @@ write.pdb(ligand, file = "1hsg_ligand.pdb")
 protein <- atom.select(pdb, "protein", value = TRUE)
 write.pdb(protein, file = "1hsg_protein.pdb")
 ```
+
+``` r
+res <- read.pdb("all.pdbqt", multi = TRUE)
+write.pdb(res, file = "results.pdb")
+```
