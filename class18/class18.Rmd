@@ -46,7 +46,7 @@ which(id != 1)
 
 ```{r}
 pos <- which(id != 1)[1]
-seq$ali[,pos]
+
 ```
 
 
